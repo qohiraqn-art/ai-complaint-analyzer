@@ -6,11 +6,16 @@ import time
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+from pydantic import BaseModel
 
 load_dotenv()
 
 api_key = os.getenv("gemini_api_key")
 client = genai.Client(api_key=api_key)
+
+class HasilAnalisis(BaseModel) :
+    rating : int
+    bermasalah : bool
 
 def analisis_review(review) :
     percobaan_maksimal = 3
@@ -30,7 +35,8 @@ def analisis_review(review) :
                 )
             )
             data = json.loads(response.text)
-            return data 
+            hasil = HasilAnalisis(**data)
+            return hasil
         except Exception as masalah :
             print(f"percobaan : {percobaan + 1}, gagal ", masalah)
             time.sleep(5)
@@ -53,15 +59,16 @@ for index, row in df.iterrows() :
 
 for item in hasil_analisa_review :
     if item is not None:
-        if item["bermasalah"] == True :
+        if item.bermasalah == True :
             yang_bermasalah = yang_bermasalah + 1
-        total_rating = total_rating + item["rating"]
+        total_rating = total_rating + item.rating
 
 rata_rata = total_rating / len(hasil_analisa_review)
 print(rata_rata)
 
-df_hasil = pd.DataFrame(hasil_analisa_review)
+data_untuk_tabel = [item.model_dump() for item in hasil_analisa_review if item is not None]
+df_hasil = pd.DataFrame(data_untuk_tabel)
 df_final = pd.concat([df,df_hasil], axis=1)
-df_final.to_csv("hasil_analisa_review.cvs", index=False)
+df_final.to_csv("hasil_analisis_review.csv", index=False)
 
 print(df_final) 

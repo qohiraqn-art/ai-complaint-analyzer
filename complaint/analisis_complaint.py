@@ -56,7 +56,7 @@ for item in semua_hasil :
 
 df_hasil = pd.DataFrame(semua_hasil)
 df_final = pd.concat([df,df_hasil], axis=1)
-df_final.to_csv("hasil_analisis.csv", index=False)
+df_final.to_csv("hasil_analisis_complaint.csv", index=False)
 
 print(semua_hasil)
 print('yang urgent :', urgent)
