@@ -1,3 +1,5 @@
 {
-    "start" : "python bot_telegram.py"
+  "deploy": {
+    "startCommand": "python bot_telegram.py"
+  }
 }
